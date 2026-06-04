@@ -44,15 +44,14 @@ class HybridRetriverSystem:
             base_retriever=self.ensemble_retriever
         )
 
-    def _setup_chroma(self,chunks: List[Document])-> Chroma:
-        if os.path.exists(self.persist_directory) and not chunks:
-            print("Connecting to existing ChromaDB...")
-            return Chroma(
-                persist_directory=self.persist_directory,
-                embedding_function=self.embeddings
-            )
-        
-        print("Building/Updating ChromaDB...")
+    def _setup_chroma(self, chunks: List[Document]) -> Chroma:
+   
+        import shutil
+        if os.path.exists(self.persist_directory):
+            print("Cleaning up old database...")
+            shutil.rmtree(self.persist_directory)
+    
+        print("Building fresh ChromaDB...")
         return Chroma.from_documents(
             documents=chunks,
             embedding=self.embeddings,
